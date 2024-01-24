@@ -22,9 +22,17 @@ export function SearchBar(props) {
                                 label="Search for music"
                                 className="mb-3"
                             >
-                                <Form.Control type="text" placeholder="" />
+                                <Form.Control 
+                                type="text" 
+                                value={props.searchText}
+                                onChange={(e) => props.textToSearch(e.target.value)}
+                                />
                             </FloatingLabel>
-                            <Button variant="primary" className={styles.button}>
+                            <Button 
+                            variant="primary" 
+                            className={styles.button}
+                            onClick={props.searchAction}
+                            >
                                 Search
                             </Button>
                         </Form.Group>
