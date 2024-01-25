@@ -2,11 +2,7 @@ import React from "react";
 import { ListGroup, Card } from "react-bootstrap";
 
 export function SearchResults(props) {
-  // props.SearchResults.array.forEach(song => {
 
-  // });
-
-  console.log(props.searchResults.length);
   return (
     <>
       <Card style={{ width: "25rem", margin: 10 }}>

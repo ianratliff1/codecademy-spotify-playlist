@@ -1,10 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SearchBar } from "../SearchBar/SearchBar";
 import { SearchResults } from "../SearchResults/SearchResults";
 import { Playlist } from "../Playlist/Playlist";
 import "./App.css"; // Import the CSS module
+import Spotify from "../../util/Spotify";
 
 function App() {
+
+  const [accessToken, setAccessToken] = useState(null);
+
+  useEffect(() => {
+    // Check if the access_token exists in the URL
+    if (window.location.hash.includes('access_token')) {
+      console.log('Spotify access token detected');
+      const thisAccessToken = Spotify.parseAccessTokenFromUrl();
+     setAccessToken(thisAccessToken);
+    }
+  }, []);
+
   const [searchResults, setSearchResults] = useState([
     // mock data for now
     { name: "name1", artist: "artist1", album: "album1", id: 1 },
@@ -28,7 +41,6 @@ function App() {
 
   function handleRemoveSong(song) {
     setPlaylist({...playlist, songs: playlist.songs.filter((s) => s.id !== song.id)})
-    // setPlaylist(playlist.songs.filter((s) => s.id !== song.id));
   }
 
   function handleSavePlaylist() {
@@ -48,11 +60,16 @@ function App() {
     setSearchText(text);
   }
 
+  function handleConnectToSpotify() {
+    console.log(Spotify.getAccessToken());
+  }
+
   return (
     <>
       <SearchBar 
       textToSearch={handleSearchText} 
       searchAction={handleSearch}
+      connectToSpotifyAction={handleConnectToSpotify}
       />
       <div className="content">
         <SearchResults 
