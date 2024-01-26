@@ -9,7 +9,7 @@ function Spotify() {
     var state = generateRandomString(16);
     localStorage.setItem('state', state);
 
-    var scope = "user-read-private user-read-email playlist-modify-private";
+    var scope = "user-read-private user-read-email playlist-modify-private playlist-modify-public";
 
     var url = "https://accounts.spotify.com/authorize";
     url += "?response_type=token";

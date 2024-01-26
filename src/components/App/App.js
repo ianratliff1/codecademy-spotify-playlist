@@ -7,26 +7,37 @@ import Spotify from "../../util/Spotify";
 
 function App() {
 
-  const [accessToken, setAccessToken] = useState(null);
-
   useEffect(() => {
     // Check if the access_token exists in the URL
     if (window.location.hash.includes('access_token')) {
       console.log('Spotify access token detected');
       const thisAccessToken = Spotify.parseAccessTokenFromUrl();
      setAccessToken(thisAccessToken);
+     console.log(`Access token is: ${thisAccessToken.accessToken}`)
+     // Get user info:
+     fetch('https://api.spotify.com/v1/me', {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + thisAccessToken.accessToken
+        },
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log(data);
+        setSpotifyUser(data);
+      })
     }
   }, []);
 
-  const [searchResults, setSearchResults] = useState([
-    // mock data for now
-    { name: "name1", artist: "artist1", album: "album1", id: 1 },
-    { name: "name2", artist: "artist2", album: "album2", id: 2 },
-    { name: "name3", artist: "artist3", album: "album3", id: 3 }
-  ]);
+  const [searchResults, setSearchResults] = useState(null);
   const [playlist, setPlaylist] = useState({name: '', songs: []});
-
   const [searchText, setSearchText] = useState('');
+  const [accessToken, setAccessToken] = useState(null);
+  const [spotifyUser, setSpotifyUser] = useState({
+    display_name: '',
+    id: ''
+  });
+
 
   function handleSongAdd(song) {
     if(playlist.songs.includes(song)) {
@@ -44,12 +55,70 @@ function App() {
   }
 
   function handleSavePlaylist() {
-    alert(JSON.stringify(playlist));
-    setPlaylist({name: '', songs: []})
+    console.log(`Saving playlist '${playlist.name}'`)
+    fetch(`https://api.spotify.com/v1/users/${spotifyUser.id}/playlists`, {
+      method: "POST",
+      headers: {
+        "authorization": "Bearer " + accessToken.accessToken,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        "name": playlist.name,
+        "description": "Created by Ian's Jammmin v2",
+        "public": false
+      })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      const tracksToSave = {
+        "uris": playlist.songs.map(song => {
+          return song.uri
+        })
+      };
+      console.log(`tracksToSave: ${JSON.stringify(tracksToSave)}`)
+      // data.id
+      console.log(`New Playlist ID: ${data.id}`);
+      fetch(`https://api.spotify.com/v1/playlists/${data.id}/tracks`, {
+        method: "POST",
+        headers: {
+          "authorization": "Bearer " + accessToken.accessToken,
+          // "Content-Type": "application/json"
+        },
+        body: JSON.stringify(tracksToSave)
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if(data.snapshot_id) {
+          alert('Playlist saved successfully');
+          setPlaylist({name: '', songs: []})
+        } else {
+          alert('There was an error saving the playlist. Please try again later.');
+        }
+      })
+    })
   }
 
   function handleSearch() {
-    alert(searchText); 
+
+    // alert(searchText); 
+    const textToSearch = encodeURIComponent(searchText);
+    const req = `https://api.spotify.com/v1/search?q=${textToSearch}&type=track&limit=10`
+    console.log(`Search URI: ${req}`);
+    // console.log('header|||  "authorization": "Bearer " '+ accessToken.accessToken);
+    // console.log(JSON.stringify(accessToken))
+    fetch(req, {
+      method: "GET",
+      headers: {
+        "authorization": "Bearer " + accessToken.accessToken
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Search results are in, here they are. Setting search Results!'+data);
+        setSearchResults(data);
+
+      })
+      .catch((error) => console.log(error));
   }
 
   function handlePlaylistName(name) {
@@ -61,7 +130,7 @@ function App() {
   }
 
   function handleConnectToSpotify() {
-    console.log(Spotify.getAccessToken());
+    Spotify.getAccessToken()
   }
 
   return (
@@ -70,6 +139,8 @@ function App() {
       textToSearch={handleSearchText} 
       searchAction={handleSearch}
       connectToSpotifyAction={handleConnectToSpotify}
+      accessTokenState={accessToken}
+      user={spotifyUser.display_name}
       />
       <div className="content">
         <SearchResults 

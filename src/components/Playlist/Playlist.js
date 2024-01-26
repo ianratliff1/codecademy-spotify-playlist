@@ -6,7 +6,7 @@ import {
   FloatingLabel,
   Form
 } from "react-bootstrap";
-
+// track.id, .name, .artists[0].name, .album.name
 export function Playlist(props) {
   return (
     <>
@@ -59,7 +59,7 @@ export function Playlist(props) {
               >
                 {song.name}
                 <div style={{ fontSize: "0.8rem" }}>
-                  {song.artist} | {song.album}
+                  {song.artists[0].name} | {song.album.name}
                 </div>
               </ListGroup.Item>
             );
