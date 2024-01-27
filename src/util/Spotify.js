@@ -32,7 +32,6 @@ function Spotify() {
       return initial;
     }, {})
     window.location.hash = '';
-    console.log(`accessToken: ${hash.access_token}`)
     return {
       accessToken: hash.access_token,
       tokenType: hash.token_type,

@@ -25,7 +25,7 @@ export function SearchBar(props) {
           </Navbar.Brand><br />
           <span className={styles.smallText}>Spotify Playlist Builder</span>
           </div>
-          <Form inline className={`my-2 my-lg-0 ${styles.formCustom}`}>
+          <Form className={`my-2 my-lg-0 ${styles.formCustom}`} onSubmit={props.searchAction}>
             <Form.Group controlId="formSearch" className="d-flex">
               <FloatingLabel
                 controlId="floatingInput"
@@ -48,6 +48,10 @@ export function SearchBar(props) {
               </Button>
             </Form.Group>
           </Form>
+        </div>
+        <div className={styles.ianRatliff}>
+          By: <a href="https://github.com/ianratliff1/">Ian Ratliff</a><br />
+          <span className={styles.smallText}><a href="https://github.com/ianratliff1/codecademy-spotify-playlist">Jammmin v2 Github</a></span>
         </div>
         <div className={styles.buttonContainer}>
         <Button

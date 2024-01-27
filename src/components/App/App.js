@@ -10,10 +10,9 @@ function App() {
   useEffect(() => {
     // Check if the access_token exists in the URL
     if (window.location.hash.includes('access_token')) {
-      console.log('Spotify access token detected');
+      console.log('Connected to Spotify account');
       const thisAccessToken = Spotify.parseAccessTokenFromUrl();
      setAccessToken(thisAccessToken);
-     console.log(`Access token is: ${thisAccessToken.accessToken}`)
      // Get user info:
      fetch('https://api.spotify.com/v1/me', {
         method: "GET",
@@ -23,7 +22,6 @@ function App() {
       })
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data);
         setSpotifyUser(data);
       })
     }
@@ -37,6 +35,8 @@ function App() {
     display_name: '',
     id: ''
   });
+  const [searchIsLoading, setSearchIsLoading] = useState(false);
+  const [playlistIsLoading, setPlaylistIsLoading] = useState(false);
 
 
   function handleSongAdd(song) {
@@ -55,6 +55,7 @@ function App() {
   }
 
   function handleSavePlaylist() {
+    setPlaylistIsLoading(true);
     console.log(`Saving playlist '${playlist.name}'`)
     fetch(`https://api.spotify.com/v1/users/${spotifyUser.id}/playlists`, {
       method: "POST",
@@ -75,9 +76,7 @@ function App() {
           return song.uri
         })
       };
-      console.log(`tracksToSave: ${JSON.stringify(tracksToSave)}`)
       // data.id
-      console.log(`New Playlist ID: ${data.id}`);
       fetch(`https://api.spotify.com/v1/playlists/${data.id}/tracks`, {
         method: "POST",
         headers: {
@@ -91,21 +90,23 @@ function App() {
         if(data.snapshot_id) {
           alert('Playlist saved successfully');
           setPlaylist({name: '', songs: []})
+          setPlaylistIsLoading(false);
         } else {
           alert('There was an error saving the playlist. Please try again later.');
+          setPlaylistIsLoading(false);
         }
       })
     })
   }
 
-  function handleSearch() {
-
-    // alert(searchText); 
+  function handleSearch(e) {
+    e.preventDefault();
+    if(!accessToken || !searchText) {
+      return;
+    }
+    setSearchIsLoading(true);
     const textToSearch = encodeURIComponent(searchText);
     const req = `https://api.spotify.com/v1/search?q=${textToSearch}&type=track&limit=10`
-    console.log(`Search URI: ${req}`);
-    // console.log('header|||  "authorization": "Bearer " '+ accessToken.accessToken);
-    // console.log(JSON.stringify(accessToken))
     fetch(req, {
       method: "GET",
       headers: {
@@ -114,11 +115,14 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Search results are in, here they are. Setting search Results!'+data);
         setSearchResults(data);
-
+        setSearchIsLoading(false);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        setSearchIsLoading(false);
+      });
+      
   }
 
   function handlePlaylistName(name) {
@@ -146,6 +150,7 @@ function App() {
         <SearchResults 
         searchResults={searchResults}
         addSongToPlaylist={handleSongAdd} 
+        isLoading={searchIsLoading}
         />
         <Playlist 
         playlist={playlist} 
@@ -153,6 +158,7 @@ function App() {
         removeSong={handleRemoveSong} 
         savePlaylist={handleSavePlaylist} 
         playlistName={handlePlaylistName}
+        isLoading={playlistIsLoading}
         />
       </div>
     </>

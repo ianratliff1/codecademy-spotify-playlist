@@ -1,51 +1,57 @@
-import React from "react";
-import {
-  ListGroup,
-  Card,
-  Button,
-  FloatingLabel,
-  Form
-} from "react-bootstrap";
-// track.id, .name, .artists[0].name, .album.name
+import React, { useEffect, useState } from "react";
+import { ListGroup, Card, Button, FloatingLabel, Form } from "react-bootstrap";
+import styles from "./Playlist.module.css";
+
 export function Playlist(props) {
+  const [loader, setLoader] = useState('');
+  useEffect(() => {
+    if (props.isLoading) {
+      setLoader(<div className={styles.loader}></div>);
+    } else {
+      setLoader('');
+    }
+  }, [props.isLoading]);
+
   return (
     <>
       <Card style={{ width: "25rem", margin: 10 }}>
         <Card.Header>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
             <span>Playlist</span>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={
-                props.playlist.songs.length === 0 ||
-                props.playlist.name.length === 0
-              }
-              onClick={() => props.savePlaylist()}
-            >
-              Save to spotify
-            </Button>
+            {loader}
+            <div style={{ marginLeft: "auto" }}>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={
+                  props.playlist.songs.length === 0 ||
+                  props.playlist.name.length === 0
+                }
+                onClick={() => props.savePlaylist()}
+              >
+                Save to spotify
+              </Button>
+            </div>
           </div>
         </Card.Header>
         <ListGroup variant="flush">
-          {/* <FormControl
-            plaintext
-            placeholder="Playlist Name"
-            style={{ borderBottom: "1px solid #000", padding: 10 }}
-            value={props.playlist.name}
-            onChange={(e) => props.playlistName(e.target.value)}
-          /> */}
           <FloatingLabel
             controlId="playlistName"
             label="Playlist Name"
             className="mb-3"
           >
-            <Form.Control 
-            type="text" 
-            placeholder=""
-            style={{ borderBottom: "1px solid #000", paddingLeft: 5 }}
-            value={props.playlist.name}
-            onChange={(e) => props.playlistName(e.target.value)} 
+            <Form.Control
+              type="text"
+              placeholder=""
+              style={{ borderBottom: "1px solid #000", paddingLeft: 5 }}
+              value={props.playlist.name}
+              onChange={(e) => props.playlistName(e.target.value)}
             />
           </FloatingLabel>
           {props.playlist.songs.length === 0 && (

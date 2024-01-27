@@ -15,7 +15,13 @@
 .navbarContainer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
+}
+.ianRatliff {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .navbar-custom {
   display: flex;

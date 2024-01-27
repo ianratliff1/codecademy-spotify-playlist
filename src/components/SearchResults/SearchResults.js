@@ -1,7 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ListGroup, Card } from "react-bootstrap";
+import styles from './SearchResults.module.css';
 
 export function SearchResults(props) {
+
+  const [loader, setLoader] = useState('');
+  useEffect(() => {
+    if(props.isLoading) {
+      setLoader(<div className={styles.loader}></div>)
+    } else {
+      setLoader('');
+    }
+  }, [props.isLoading]);
+  
+  
   var content = <ListGroup.Item disabled>Search to get started</ListGroup.Item>;
 
   if (props.searchResults && props.searchResults.tracks) {
@@ -23,16 +35,14 @@ export function SearchResults(props) {
   return (
     <>
       <Card style={{ width: "25rem", margin: 10 }}>
-        <Card.Header>Search Results</Card.Header>
+        <Card.Header>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            Search Results
+            {loader}
+          </div>
+        </Card.Header>
         <ListGroup variant="flush">{content}</ListGroup>
       </Card>
     </>
   );
 }
-
-// track.id, .name, .artists[0].name, .album.name
-
-// artist: thisObj.tracks.items[n].artists[0].name
-// album: thisObj.tracks.items[n].album.name
-// song: thisObj.tracks.items[n].name
-// id: thisObj.tracks.items[n].id
