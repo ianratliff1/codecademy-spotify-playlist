@@ -21,7 +21,7 @@ export function SearchBar(props) {
         <div className={styles.brandSearchContainer}>
           <div>
           <Navbar.Brand href="#home" className={styles.logo}>
-            Jammmin v2
+            Jammming v2
           </Navbar.Brand><br />
           <span className={styles.smallText}>Spotify Playlist Builder</span>
           </div>
