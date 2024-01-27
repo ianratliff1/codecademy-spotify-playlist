@@ -4,7 +4,7 @@ function Spotify() {
     
   const getAccessToken = () => {
     var client_id = "ce555a4e30a2443e89ac46e0745ee0e6";
-    var redirect_uri = "https://ians-jammming-v2";
+    var redirect_uri = "https://ians-jammming-v2.surge.sh";
 
     var state = generateRandomString(16);
     localStorage.setItem('state', state);
